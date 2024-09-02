@@ -1,0 +1,28 @@
+#华为网络设备基础登录及基础命令学习
+
+import paramiko
+import time
+from getpass import getpass
+
+username = input("Please input you name:")
+passwd = input("Please input you password:")
+
+f = open(r'hw.txt','r')
+for i in f.readlines():
+    ip = i.strip()
+    ssh_client = paramiko.SSHClient()
+    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh_client.connect(hostname=ip,username=username,password=passwd)
+    print("Successfully connect to " + ip)
+    remote_connection = ssh_client.invoke_shell()
+    remote_connection.send("sys\n")
+    remote_connection.send("vlan 3 \n")
+    remote_connection.send("retu \n")
+    remote_connection.send("save \n")
+    remote_connection.send("y \n")
+    time.sleep(1)
+    output1 = remote_connection.recv(65535)
+    print(output1.decode("ascii"))
+
+f.close()
+ssh_client.close
